@@ -1,0 +1,141 @@
+@startuml Pokdeng Game
+
+title Pokdeng Game - Class Diagram with Composition and Aggregation
+
+note "Relationship Types in this Diagram:\n\n<b>Composition (solid diamond):</b>\nA strong ownership relationship where the child objects cannot exist\nwithout the parent. When the parent is destroyed, the children are also destroyed.\n\n<b>Aggregation (hollow diamond):</b>\nA weak ownership relationship where the child objects can exist\nindependently of the parent. When the parent is destroyed, the children can continue to exist." as N1
+
+' Enums
+enum CardSuit {
+  Clubs
+  Diamonds
+  Hearts
+  Spades
+}
+
+enum CardRank {
+  Ace
+  Two
+  Three
+  Four
+  Five
+  Six
+  Seven
+  Eight
+  Nine
+  Ten
+  Jack
+  Queen
+  King
+}
+
+' Classes
+class Card {
+  + readonly suit: CardSuit
+  + readonly rank: CardRank
+  + toString(): string
+  + Value: number
+}
+
+class Hand {
+  - cards: Card[]
+  + addCard(card: Card): void
+  + Value: number
+  + reset(): void
+  + isPok: boolean
+  + isDeng: boolean
+  + cards: Card[]
+  + getCardsAsString(): string
+  + toString(): string
+}
+
+class Player {
+  - _bet: number
+  - _status: string
+  - _money: number
+  - readonly _id: string
+  - _hands: Hand[]
+  + money: number
+  + id: string
+  + hands: Hand[]
+  + reset(): void
+  + setBet(amount: number): void
+  + bet: number
+  + isBroke(): boolean
+  + setMoney(amount: number): void
+  - updateStatus(): void
+  + setStatus(status: string): void
+  + status: string
+  + getPlayerInfo(): string
+  + getBetInfo(): string
+}
+
+class Deck {
+  - cards: Card[]
+  + reset(): void
+  + shuffle(times: number): void
+  + getCard(): Card
+}
+
+class PokdengGame {
+  - _players: Player[]
+  - _dealer: Player
+  - _deck: Deck
+  + players: Player[]
+  + addPlayer(player: Player): void
+  + removePlayer(index: number): void
+  + createPlayers(): void
+  + dealerVsPlayer(player: Player): void
+  + deal(player: Player): void
+  + collectBets(): void
+  + play(): void
+}
+
+' Relationships with explanations
+Card "1" *-- "1" CardSuit : composition
+note on link
+  A Card must have a Suit
+  and cannot exist without it
+end note
+
+Card "1" *-- "1" CardRank : composition
+note on link
+  A Card must have a Rank
+  and cannot exist without it
+end note
+
+Hand "1" o-- "many" Card : aggregation
+note on link
+  Cards can exist independently
+  of a Hand and can be moved
+  between different Hands
+end note
+
+Player "1" *-- "many" Hand : composition
+note on link
+  Hands are created specifically
+  for a Player and don't exist
+  outside that context
+end note
+
+PokdengGame "1" o-- "many" Player : aggregation
+note on link
+  Players can exist independently
+  of a specific game and can
+  join different games
+end note
+
+PokdengGame "1" *-- "1" Deck : composition
+note on link
+  The deck is created specifically
+  for the game and doesn't
+  exist independently
+end note
+
+PokdengGame "1" *-- "1" Player : composition
+note on link #LightBlue
+  The dealer is a special Player
+  that belongs to the game and
+  doesn't make sense outside of it
+end note
+
+@enduml
